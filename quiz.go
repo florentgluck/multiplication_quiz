@@ -1,8 +1,12 @@
 package main
 
 import (
+    "os"
     "fmt"
     "time"
+    "bufio"
+    "strings"
+    "strconv"
     "math/rand"
     "github.com/fatih/color"
 )
@@ -14,8 +18,7 @@ const (
 func questionInt(msg string, minValue int, errorMsg string) int {
     var val int
     for {
-        fmt.Print(msg)
-        fmt.Scanf("%d", &val)
+        val = readInteger(msg)
         if val >= minValue {
             break
         } else {
@@ -31,7 +34,32 @@ func waitForEnter(msg string) {
     fmt.Scanf("%s", &s)
 }
 
+func readInteger(msg string) int {
+    for {
+        fmt.Print(msg)
+        reader := bufio.NewReader(os.Stdin)
+        line, err := reader.ReadString('\n')
+        if err != nil {
+            fmt.Println("Failed reading input: ", err)
+            continue
+        }
+        line = strings.TrimSpace(line)
+        v := strings.Fields(line)
+        if len(v) != 1 {
+            fmt.Println("Please enter exactly one number!")
+            continue
+        }
+        i, err := strconv.Atoi(v[0])
+        if err != nil {
+            fmt.Println("Please enter a valid number!")
+            continue
+        }
+        return i
+    }
+}
+
 func main() {
+
     rand.Seed(time.Now().UnixNano())
 
     quit := false
@@ -53,11 +81,10 @@ func main() {
             m := rand.Intn(tab-1)+2
             n := rand.Intn(nMax-1)+2
 
-            fmt.Printf("[Q%d]: %d x %d = ? ", i+1, m, n)
+            question := fmt.Sprintf("[Q%d]: %d x %d = ? ", i+1, m, n)
             timeStart := time.Now()
-
             var answer int
-            fmt.Scanf("%d", &answer)
+            answer = readInteger(question)
             timeEnd := time.Now()
             timeElapsed := timeEnd.Sub(timeStart)
 
